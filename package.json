@@ -4,7 +4,7 @@
   "private": true,
   "license": "GNU General Public License v3.0",
   "scripts": {
-    "data": "node App/googleSheetsToJSON.js",
+    "data": "node --experimental-modules App/getGSheets.mjs",
     "lint": "lint-staged"
   },
   "lint-staged": {
@@ -27,5 +27,11 @@
     "loglevel": "^1.6.3",
     "node-fetch": "^2.6.0",
     "prettier": "^1.18.2"
+  },
+  "dependencies": {
+    "commander": "^2.20.0"
+  },
+  "bin": {
+    "gsdata": "getGSheets.mjs"
   }
 }
