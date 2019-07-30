@@ -1,8 +1,11 @@
-import fs from 'fs';
+const fs = require('fs');
 
-function tsvToJSON(data, options = {
-  headers: true
-}) {
+exports.tsvToJSON = function(
+  data,
+  options = {
+    headers: true,
+  }
+) {
   const d = data.replace(/\r/g, '').split('\n');
   const headers = d[0].split('\t');
   const body = d.slice(options.headers ? 1 : 0);
@@ -19,22 +22,17 @@ function tsvToJSON(data, options = {
   }
 
   return result;
-}
+};
 
-function writeFile(data, file) {
+exports.writeFile = function(data, file) {
   fs.writeFile(
     file,
     JSON.stringify(data, null, 2),
     'utf-8',
     err =>
-    void console.log(
-      '\x1b[33m%s\x1b[0m',
-      err || `JSON successfully generated. ${file} written`
-    )
-  )
-}
-
-export default {
-  tsvToJSON,
-  writeFile
-}
+      void console.log(
+        '\x1b[33m%s\x1b[0m',
+        err || `JSON successfully generated. ${file} written`
+      )
+  );
+};

@@ -1,10 +1,30 @@
 {
   "name": "googleSheetsToJSON",
   "version": "1.0.0",
-  "private": true,
+  "author": "",
   "license": "GNU General Public License v3.0",
+  "description": "",
+  "keywords": [
+    "google",
+    "spreadsheets",
+    "worksheets",
+    "sheets",
+    "json",
+    "cli"
+  ],
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": ".git"
+  },
+  "bugs": {
+    "url": ""
+  },
+  "main": "./src/index.js",
+  "bin": {
+    "gsdata": "./bin/index.js"
+  },
   "scripts": {
-    "data": "node --experimental-modules App/getGSheets.mjs",
     "lint": "lint-staged"
   },
   "lint-staged": {
@@ -12,7 +32,7 @@
       "eslint --fix",
       "git add"
     ],
-    "*.{json,css,md}": [
+    "*.{json,md}": [
       "prettier --write",
       "git add"
     ]
@@ -22,16 +42,12 @@
     "eslint": "^5.16.0",
     "eslint-plugin-prettier": "^3.1.0",
     "husky": "^2.4.1",
-    "jsdom": "^15.1.1",
     "lint-staged": "^8.2.1",
-    "loglevel": "^1.6.3",
     "node-fetch": "^2.6.0",
     "prettier": "^1.18.2"
   },
   "dependencies": {
-    "commander": "^2.20.0"
-  },
-  "bin": {
-    "gsdata": "getGSheets.mjs"
+    "commander": "^2.20.0",
+    "jsdom": "^15.1.1"
   }
 }

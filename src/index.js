@@ -1,30 +1,13 @@
-#!/usr/bin/env node
+const fetch = require('node-fetch');
+const jsdom = require('jsdom');
+const utils = require('./utils.js');
 
-import fetch from 'node-fetch';
-import jsdom from 'jsdom';
-import utils from './utils.mjs';
-import config from '../package.json';
-import program from 'commander';
-
-const {
-  tsvToJSON,
-  writeFile
-} = utils;
+const { tsvToJSON, writeFile } = utils;
 const format = 'tsv';
 const href = 'https://docs.google.com/spreadsheets/d';
 
-program
-  .version(config.version)
-  .usage(`<table-id> [filename] [options]`)
-  .option('-j, --json', 'Convert TSV to JSON')
-  .parse(process.argv);
-
-export default function gsdata(program) {
-  const {
-    tableId,
-    file,
-    ...options
-  } = program;
+module.exports = function gsdata(program) {
+  const { tableId, file, options = {} } = program;
 
   return fetch(`${href}/${tableId}`)
     .then(res => res.text())
@@ -43,18 +26,23 @@ export default function gsdata(program) {
         .map(x => url(tableId, x.sheetId, format))
         .map(url => fetch(url).then(d => d.text()));
 
-      return Promise.all(P).then(res =>
-        j.reduce(
-          (acc, {
-            sheetName
-          }, i) => ((acc[sheetName] = options.json ? tsvToJSON(res[i]) : res[i]), acc), {}
+      return Promise.all(P)
+        .then(res =>
+          j.reduce(
+            (acc, { sheetName }, i) => (
+              (acc[sheetName] = options.json ? tsvToJSON(res[i]) : res[i]), acc
+            ),
+            {}
+          )
         )
-      ).then(res => {
-        if (file) writeFile(res, file);
-        else console.log(res);
-      }).catch(err => console.log(err));
-    }).catch(err => console.log(err));
-}
+        .then(res => {
+          if (file && typeof file == 'string') writeFile(res, file);
+          else console.log(res);
+        })
+        .catch(console.error);
+    })
+    .catch(console.error);
+};
 
 // Example on how to export a Google sheet to various formats:
 // https://gist.github.com/Spencer-Easton/78f9867a691e549c9c70
