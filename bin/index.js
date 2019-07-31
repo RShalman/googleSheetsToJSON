@@ -11,8 +11,8 @@ program
   .action(function(...args) {
     const params = {
       tableId: args[0],
-      file: args[1],
-      options: args[2],
+      file: typeof args[1] == 'string' ? args[1] : null,
+      options: typeof args[1] == 'object' ? args[1] : args[2],
     };
     gsdata(params);
   });
