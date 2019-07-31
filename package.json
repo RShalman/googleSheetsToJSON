@@ -10,15 +10,16 @@
     "worksheets",
     "sheets",
     "json",
-    "cli"
+    "cli",
+    "command-line"
   ],
-  "homepage": "",
+  "homepage": "https://github.com/RShalman/sheets-to-json",
   "repository": {
     "type": "git",
-    "url": ".git"
+    "url": "https://github.com/RShalman/sheets-to-json.git"
   },
   "bugs": {
-    "url": ""
+    "url": "https://github.com/RShalman/sheets-to-json/issues"
   },
   "main": "./src/index.js",
   "bin": {
@@ -47,7 +48,6 @@
   },
   "dependencies": {
     "node-fetch": "^2.6.0",
-    "commander": "^2.20.0",
-    "jsdom": "^15.1.1"
+    "commander": "^2.20.0"
   }
 }

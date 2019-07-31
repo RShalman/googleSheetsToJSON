@@ -1,34 +1,26 @@
 const fetch = require('node-fetch');
-const jsdom = require('jsdom');
 const utils = require('./utils.js');
 
 const { tsvToJSON, writeFile } = utils;
-const format = 'tsv';
-const href = 'https://docs.google.com/spreadsheets/d';
+const FORMAT = 'tsv';
+const HREF = 'https://docs.google.com/spreadsheets/d';
 
 module.exports = function gsdata(program) {
   const { tableId, file, options = {} } = program;
 
-  return fetch(`${href}/${tableId}`)
+  return fetch(`${HREF}/${tableId}`)
     .then(res => res.text())
     .then(res => {
-      const dom = new jsdom.JSDOM(res, {
-        includeNodeLocations: true,
-      });
-      const scriptText = dom.window.document
-        .getElementById('docs-editor-container')
-        .nextSibling.textContent.toString();
+      const dataObj = parseDataObject(res);
+      const sheetsMetaData = getMetaData(dataObj);
 
-      const jsonFromScriptText = getScriptObject(scriptText);
-      const j = getMetaData(jsonFromScriptText);
-
-      const P = j
-        .map(x => url(tableId, x.sheetId, format))
+      const P = sheetsMetaData
+        .map(x => url(tableId, x.sheetId))
         .map(url => fetch(url).then(d => d.text()));
 
       return Promise.all(P)
         .then(res =>
-          j.reduce(
+          sheetsMetaData.reduce(
             (acc, { sheetName }, i) => (
               (acc[sheetName] = options.json ? tsvToJSON(res[i]) : res[i]), acc
             ),
@@ -46,15 +38,15 @@ module.exports = function gsdata(program) {
 
 // Example on how to export a Google sheet to various formats:
 // https://gist.github.com/Spencer-Easton/78f9867a691e549c9c70
-function url(tableId, sheetId, format) {
-  return `${href}/${tableId}/export?format=${format}&gid=${sheetId}`;
+function url(tableId, sheetId) {
+  return `${HREF}/${tableId}/export?format=${FORMAT}&gid=${sheetId}`;
 }
 
-function getScriptObject(scriptText) {
-  const sheetsData = scriptText
-    .match(/=\s{.* var/gi)
+function parseDataObject(data) {
+  const sheetsData = data
+    .match(/=\s{".*};\s(var|let|const)/gi)
     .toString()
-    .replace(/=\s|;| var/gi, '');
+    .replace(/=\s|;|\s(var|let|const)/gi, '');
   return JSON.parse(sheetsData);
 }
 
