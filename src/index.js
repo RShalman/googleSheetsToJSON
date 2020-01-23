@@ -43,16 +43,31 @@ function url(tableId, sheetId) {
 }
 
 function parseDataObject(data) {
-  const sheetsData = data
+  let sheetsData = data
     .match(/=\s{".*};\s(var|let|const)/gi)
     .toString()
     .replace(/=\s|;|\s(var|let|const)/gi, '');
-  return JSON.parse(sheetsData);
+
+  const parseData = JSON.parse(sheetsData);
+  const snapshotData = parseData.changes.topsnapshot.slice(1);
+  const arrOfSnapshotElements = snapshotData.map(x => {
+    // For some reason JSON.parse not always parse the furthermentioned string
+    // array so that we need to check and do it once again accurately
+    x[1] = typeof x[1] == 'string' ? JSON.parse(x[1]) : x[1];
+    return x;
+  });
+
+  return arrOfSnapshotElements;
 }
 
-function getMetaData(obj) {
-  return obj.changes.topsnapshot
-    .filter(x => typeof x[1][3] == 'string')
+function getMetaData(arr) {
+  // Each element of "topsnapshot"'s value has some kind of numeric code that
+  // certainly depends on type of further data. Such element has further pattern -
+  // [12345678, "some_data" OR [ elements_with_sheetID_and_name_inside]].
+  // First element is that type of code that I further use while filtering. 21350203 is a code for blocks
+  // with those sheetID & sheetName data
+  return arr
+    .filter(x => x[0] == 21350203)
     .map(x => ({
       sheetId: getSheetID(x[1]),
       sheetName: getSheetName(x[1]),
@@ -65,7 +80,8 @@ function getSheetID(arr) {
 
 function getSheetName(arr) {
   const O = arr.find(x => x != null && typeof x == `object`);
-  return Object.values(O)[0]
-    .find(Array.isArray)
-    .find(x => typeof x == `string`);
+  const arrWithSheetName = Array.isArray(O)
+    ? Object.values(O[0])[0]
+    : Object.values(O)[0];
+  return arrWithSheetName.find(Array.isArray).find(x => typeof x == `string`);
 }
