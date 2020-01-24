@@ -1,6 +1,6 @@
 {
   "name": "sheets-to-json",
-  "version": "1.0.1",
+  "version": "1.0.11",
   "author": "Roman Shalman",
   "license": "gpl-3.0",
   "description": "Get your Google Spreadsheets as single JSON with Node.js or command-line",
