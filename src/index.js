@@ -49,7 +49,7 @@ function parseDataObject(data) {
     .replace(/=\s|;|\s(var|let|const)/gi, '');
 
   const parseData = JSON.parse(sheetsData);
-  const snapshotData = parseData.changes.topsnapshot.slice(1);
+  const snapshotData = parseData.changes.topsnapshot;
   const arrOfSnapshotElements = snapshotData.map(x => {
     // For some reason JSON.parse not always parse the furthermentioned string
     // array so that we need to check and do it once again accurately
